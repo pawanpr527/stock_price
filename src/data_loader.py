@@ -1,15 +1,12 @@
-import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.preprocessing import MinMaxScaler
-class data_loader:
+class data_load:
     def __init__(self,file):
         self.filepath = file
         self.df = self._load_data()
         self._preprocess()
         self._scale_feature()
-
+    
     def _load_data(self):
         df = pd.read_csv(self.filepath)
         df=df.iloc[2:].copy()
@@ -21,12 +18,17 @@ class data_loader:
         numeric_column = ['Close','High','Low','Open','Volume']
         self.df[numeric_column] = self.df[numeric_column].apply(pd.to_numeric)
         self.df['Target'] = self.df['Close'].shift(-1)
-    
+        self.df.dropna(inplace=True)
+        
     def _scale_feature(self):
         scale = MinMaxScaler()
-        self.df['Scale_Volume'] = scale.fit_transform(self.df[['Volume']])
+        numeric_column = ['Close','High','Low','Open','Volume','Target']
+        self.df[numeric_column] = scale.fit_transform(self.df[numeric_column])
         
     def get_data(self):
         return self.df.copy()
     def head(self,n=5):
         return self.df.head(n)
+x= data_load('data/bse_data.csv')
+   
+
