@@ -3,10 +3,6 @@ from sklearn.preprocessing import MinMaxScaler
 
 class data_load:
     def __init__(self, data):
-        print(data)
-        print(data.shape)
-        print(data.columns)
-
         self.yahoo_data = data
         self.df = self._load_data()
         self._preprocess()
@@ -16,18 +12,20 @@ class data_load:
     def _load_data(self):
         df_d = self.yahoo_data
         df = df_d.copy()
-        print(df.head())
         df.index = pd.to_datetime(df.index).tz_localize(None).date
         numeric = ['Close', 'High', 'Low', 'Open', 'Volume']
         df = df[numeric]
         df['Target'] = df['Close'].shift(-1)
-        # df.dropna(inplace=True)
+        df.dropna(inplace=True)
         return df
-
+    
+    def real_target(target):
+        new_target = target
+        return new_target
     def _preprocess(self):
         numeric_column = ['Close', 'High', 'Low', 'Open', 'Volume']
         self.df[numeric_column] = self.df[numeric_column].apply(pd.to_numeric)
-        print(self.df.head())
+
     def _scale_feature(self):
        self.feature_scaler = MinMaxScaler()
        numeric_column = ['Close', 'High', 'Low', 'Open', 'Volume']
@@ -40,16 +38,12 @@ class data_load:
        if self.df[['Target']].dropna().empty:
           raise ValueError("Target column is empty after shift.")
 
-       self.df[['Target']] = self.target_scaler.fit_transform(self.df[['Target']])
-
-        
         # scale target using stored target_scaler
        self.df[['Target']] = self.target_scaler.fit_transform(self.df[['Target']])
 
     def get_data(self):
         return self.df.copy()
-    def get_target(self,index):
-        return self.df['Target'].iloc[index]
+
     def get_target_scaler(self):
         return self.target_scaler  # <-- added method
 # x=data_load('data/bse_data.csv')

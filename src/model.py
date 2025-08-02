@@ -22,6 +22,7 @@ def model_building(file):
     feature = ['Close', 'High', 'Low', 'Open', 'Volume']
     target = ['Target']
     df = data_load(file).get_data()
+    df.dropna(inplace=True)
     x_train, y_train = lstm_sequence(df, feature, target)
     print("X shape:", x_train.shape)
     print("y shape:", y_train.shape)
@@ -30,17 +31,17 @@ def model_building(file):
 def build_lstm_model(input_shape):
     model = Sequential()
     model.add(LSTM(100, return_sequences=True, input_shape=input_shape))
-    model.add(Dropout(0.2))
+    model.add(Dropout(0.3))
     model.add(BatchNormalization())
     model.add(LSTM(100, return_sequences=False))
-    model.add(Dropout(0.2))
+    model.add(Dropout(0.3))
     model.add(BatchNormalization())
-    model.add(Dense(50, activation='tanh'))
+    model.add(Dense(50, activation='relu'))
     model.add(Dense(1))
     model.compile(optimizer='adam', loss='mse')
     return model
 
-def train_lstm_model(X, y, epoch=30, batch_size=32):
+def train_lstm_model(X, y, epoch=10, batch_size=32):
 
     split = int(0.8 * len(X))
 
@@ -61,6 +62,7 @@ def train_lstm_model(X, y, epoch=30, batch_size=32):
     print(f"Test MSE: {mse:.4f}")
     
     return model,y_pred
+
 
 
 
