@@ -66,20 +66,25 @@
     <div class="row justify-content-center align-items-center min-vh-100">
       <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
         <div class="login-card">
-          <h4 class="text-center mb-4">Login</h4>
+          <h4 class="text-center mb-4">Registration</h4>
           <form>
+            <div class="mb-3">
+              <label for="FirstName" class="form-label">First Name </label>
+              <input type="text" class="form-control" id="FirstName"/>
+            </div>
+            <div class="mb-3">
+              <label for="LastName" class="form-label">Last Name </label>
+              <input type="text" class="form-control" id="LastName"/>
+            </div>
             <div class="mb-3">
               <label for="exampleInputEmail1" class="form-label">Email address</label>
               <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
             </div>
             <div class="mb-3">
-              <label for="exampleInputPassword1" class="form-label">Password</label>
-              <input type="password" class="form-control" id="exampleInputPassword1" />
+              <label for="exampleInputPassword" class="form-label">Create Password</label>
+              <input type="password" class="form-control" id="exampleInputPassword"/>
             </div>
-            <div class="mb-4 text-center link-primary ">
-                 <a href="#" class="text-decoration-none" id="Forget">Forget Password</a>
-            </div>
-            <button type="submit" class="btn mb-2 btn-primary w-100">Login</button>
+            <button type="submit" class="btn mb-2 btn-primary w-100">Register</button>
             <div class="mt-3">
               <a href="https://www.google.com" target="_blank" class="btn btn-outline-danger w-100">
                 <i class="fa-brands fa-google me-2"></i> Continue with Google
