@@ -59,7 +59,7 @@
 <body>
   <nav class="nav">
     <div class="nav-bar">
-       <a href="Registration" class="btn-outline-danger btn">Registration</a>
+       <a href="{{ url_for('register') }}" class="btn-outline-danger btn">Registration</a>
     </div>
   </nav>
   <div class="container">
@@ -67,14 +67,15 @@
       <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
         <div class="login-card">
           <h4 class="text-center mb-4">Login</h4>
-          <form>
+          <form method="POST" action="{{ url_for('login') }}">
             <div class="mb-3">
               <label for="exampleInputEmail1" class="form-label">Email address</label>
-              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
+              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email"/>
             </div>
             <div class="mb-3">
               <label for="exampleInputPassword1" class="form-label">Password</label>
-              <input type="password" class="form-control" id="exampleInputPassword1" />
+              <input type="password" class="form-control" id="exampleInputPassword1" name="password"/>
+              <input type="checkbox" style="text-decoration: none; font-size: 1em; margin-top: 1.5em;" onclick="showPass()">Show/Hide
             </div>
             <div class="mb-4 text-center link-primary ">
                  <a href="#" class="text-decoration-none" id="Forget">Forget Password</a>
@@ -91,6 +92,16 @@
       </div>
     </div>
   </div>
+  <script>
+    function showPass(){
+      const pass = document.getElementById('exampleInputPassword1');
+      if (pass.type==='password'){
+          pass.type='text';
+      }else{
+        pass.type='password'
+      }
+    }
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
     integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
