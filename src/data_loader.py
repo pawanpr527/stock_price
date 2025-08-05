@@ -25,7 +25,6 @@ class data_load:
     def _preprocess(self):
         numeric_column = ['Close', 'High', 'Low', 'Open', 'Volume']
         self.df[numeric_column] = self.df[numeric_column].apply(pd.to_numeric)
-
     def _scale_feature(self):
        self.feature_scaler = MinMaxScaler()
        numeric_column = ['Close', 'High', 'Low', 'Open', 'Volume']

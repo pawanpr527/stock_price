@@ -1,11 +1,8 @@
 import pandas as pd
 import numpy as np
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Dropout,BatchNormalization
-from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.metrics import mean_squared_error
-from src.data_loader import data_load
-
+from data_loader import data_load
+import yfinance as yf
 def lstm_sequence(df, feature_col, target_col, sequence=60):
     X, y = [], []
     for i in range(sequence, len(df) - 1):
@@ -15,54 +12,49 @@ def lstm_sequence(df, feature_col, target_col, sequence=60):
         y.append(y_val)
     X = np.array(X)
     y = np.array(y)
-    print(f"Built sequence: X.shape={X.shape}, y.shape={y.shape}")
     return X, y
 
-def model_building(file):
+def model_building(df):
     feature = ['Close', 'High', 'Low', 'Open', 'Volume']
     target = ['Target']
-    df = data_load(file).get_data()
     df.dropna(inplace=True)
     x_train, y_train = lstm_sequence(df, feature, target)
-    print("X shape:", x_train.shape)
-    print("y shape:", y_train.shape)
-    return x_train, y_train
+    return x_train
 
-def build_lstm_model(input_shape):
-    model = Sequential()
-    model.add(LSTM(100, return_sequences=True, input_shape=input_shape))
-    model.add(Dropout(0.3))
-    model.add(BatchNormalization())
-    model.add(LSTM(100, return_sequences=False))
-    model.add(Dropout(0.3))
-    model.add(BatchNormalization())
-    model.add(Dense(50, activation='relu'))
-    model.add(Dense(1))
-    model.compile(optimizer='adam', loss='mse')
-    return model
 
-def train_lstm_model(X, y, epoch=10, batch_size=32):
+def prediction(stock_model):
+    from tensorflow.keras.models import load_model
 
-    split = int(0.8 * len(X))
+    model = load_model(f'model/{stock_model}.h5', compile=False)
 
-    X_train, X_test = X[:split], X[split:]
-    y_train, y_test = y[:split], y[split:]
-
-    model = build_lstm_model((X.shape[1], X.shape[2]))
-
-    es = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+    # Download at least 61 rows
+    raw_data = yf.Ticker(f'{stock_model}.NS').history(period='max')
     
-    model.fit(X_train, y_train, validation_data=(X_test, y_test),
-              epochs=epoch, batch_size=batch_size,
-              callbacks=[es], verbose=1)
-    
-    y_pred = model.predict(X_test)
-    mse = mean_squared_error(y_test.ravel(), y_pred.ravel())
-    
-    print(f"Test MSE: {mse:.4f}")
-    
-    return model,y_pred
+    loader = data_load(raw_data)
+    df = loader.get_data()
+    target_scaler = loader.get_target_scaler()
 
+    x_input = model_building(df)
+    last_input = x_input[-1]          # shape: (60, 5)
+    last_input = last_input.reshape((1, 60, 5))  # shape: (1, 60, 5) → ready for prediction
 
+    print("x_input shape:", last_input.shape)  # Should be (1, 60, 5)
+    
+    predict = model.predict(last_input, verbose=0)
+    real_output = target_scaler.inverse_transform(predict)
+    
+    print("Predicted next target:", real_output[0][0])
 
+indian_stocks = [
+    "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS",
+    "ICICIBANK.NS", "HINDUNILVR.NS", "SBIN.NS", "LT.NS",
+    "AXISBANK.NS", "KOTAKBANK.NS", "BHARTIARTL.NS", "ITC.NS", "MARUTI.NS",
+    "HCLTECH.NS", "WIPRO.NS", "TATAMOTORS.NS", "BAJFINANCE.NS", "ASIANPAINT.NS",
+    "NTPC.NS", "POWERGRID.NS", "COCHINSHIP.NS", "GRSE.NS", "BSE.NS",
+    "CYIENT.NS", "ADANIPOWER.NS"
+]
+indian_stocks = [i.replace('.NS','') for i in indian_stocks]
+for i in range(5):
+   print(indian_stocks[i])
+   prediction(indian_stocks[i])
 
