@@ -13,7 +13,6 @@ def lstm_sequence(df, feature_col, target_col, sequence=60):
     X = np.array(X)
     y = np.array(y)
     return X, y
-
 def model_building(df):
     feature = ['Close', 'High', 'Low', 'Open', 'Volume']
     target = ['Target']
@@ -37,24 +36,10 @@ def prediction(stock_model):
     x_input = model_building(df)
     last_input = x_input[-1]          # shape: (60, 5)
     last_input = last_input.reshape((1, 60, 5))  # shape: (1, 60, 5) → ready for prediction
-
-    print("x_input shape:", last_input.shape)  # Should be (1, 60, 5)
     
     predict = model.predict(last_input, verbose=0)
     real_output = target_scaler.inverse_transform(predict)
     
-    print("Predicted next target:", real_output[0][0])
+    return float(real_output[0][0])
 
-indian_stocks = [
-    "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS",
-    "ICICIBANK.NS", "HINDUNILVR.NS", "SBIN.NS", "LT.NS",
-    "AXISBANK.NS", "KOTAKBANK.NS", "BHARTIARTL.NS", "ITC.NS", "MARUTI.NS",
-    "HCLTECH.NS", "WIPRO.NS", "TATAMOTORS.NS", "BAJFINANCE.NS", "ASIANPAINT.NS",
-    "NTPC.NS", "POWERGRID.NS", "COCHINSHIP.NS", "GRSE.NS", "BSE.NS",
-    "CYIENT.NS", "ADANIPOWER.NS"
-]
-indian_stocks = [i.replace('.NS','') for i in indian_stocks]
-for i in range(5):
-   print(indian_stocks[i])
-   prediction(indian_stocks[i])
 
