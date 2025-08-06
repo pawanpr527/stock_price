@@ -22,7 +22,7 @@ def register():
       mapping={
           'first' : name,
           'last' : last,
-          'password' : password,
+          'password' :  password,
           'email' : email
       }
     )
