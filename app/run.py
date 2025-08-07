@@ -89,7 +89,7 @@ def dashboard(symbol):
         historical_data_df = df[['Date', 'Open', 'Close', 'High', 'Volume']].copy()
         historical_data_df['Date'] = historical_data_df['Date'].dt.strftime('%Y-%m-%d')
         return render_template('dashboard.html',
-            name=stock_full,
+            name=symbol,
             Open=latest_open,
             Close=latest_close,
             High=latest_high,
@@ -106,43 +106,7 @@ def dashboard(symbol):
         return f"Error: {e}", 500
 
 
-@app.route('/registration',methods=['GET','POST'])
-def register():
-  if request.method=="POST":  
-    name = request.form.get('First')
-    last = request.form.get('Last')
-    email = request.form.get('Email')
-    password = request.form.get('Password')
-    r.hset(f"user:{email}",
-      mapping={
-          'first' : name,
-          'last' : last,
-          'password' : password,
-          'email' : email
-      }
-    )
-    return redirect(url_for('index'))
-  return render_template('registration.html')
 
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-
-        user_key = f"user:{email}"
-        if r.exists(user_key):
-            storedpass = r.hget(user_key, 'password')
-            if password == storedpass:
-                return redirect(url_for('index'))
-            else:
-                return "Incorrect password"
-        else:
-            return "Email not registered"
-
-    # For GET request, show login form
-    return render_template('login.html')
 
 
 if __name__=="__main__":
