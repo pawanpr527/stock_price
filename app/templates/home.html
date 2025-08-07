@@ -142,47 +142,8 @@
     </div>
   </div>
 
-  <!-- JavaScript -->
-  <script>
-    const input = document.getElementById("search");
-    const suggestions = document.getElementById("suggestions");
-    let selectedSymbol = null;
-
-    input.addEventListener("keyup", async () => {
-      const query = input.value.trim();
-      if (!query) {
-        suggestions.innerHTML = '';
-        selectedSymbol = null;
-        return;
-      }
-
-      const res = await fetch(`/suggest?q=${query}`);
-      const data = await res.json();
-      suggestions.innerHTML = '';
-
-      if (data.length === 0) return;
-
-      data.forEach(({ name, symbol }) => {
-        const li = document.createElement('li');
-        li.textContent = `${name} (${symbol})`;
-        li.onclick = () => {
-          input.value = `${name} (${symbol})`;
-          selectedSymbol = symbol;
-          suggestions.innerHTML = '';
-        };
-        suggestions.appendChild(li);
-      });
-    });
-
-    function triggerSearch() {
-      if (!selectedSymbol) {
-        alert("Please select a valid company from suggestions.");
-        return;
-      }
-      window.location.href = `/dashboard/${selectedSymbol}`;
-    }
-  </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+    crossorigin="anonymous"></script>
 </body>
 </html>

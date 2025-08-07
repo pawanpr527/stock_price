@@ -42,72 +42,43 @@ company_map = {
 def home():
     return render_template("home.html")
 
-@app.route('/suggest')
-def suggest():
-    query = request.args.get('q', '').strip().lower()
-    results = []
-
-    for name, symbol in company_map.items():
-        if query in name.lower() or query in symbol.lower():
-            results.append({'name': name, 'symbol': symbol})
-
-    return jsonify(results)
-
-
-@app.route('/dashboard/<symbol>')
-def dashboard(symbol):
-    try:
-        symbol = symbol.upper().replace(".NS", "")
-        stock_full = f"{symbol}.NS"
-
-        # Predict next day's price
-        predicted_price = prediction(symbol)
-
-        # Fetch latest 10 days data
-        df = yf.Ticker(stock_full).history(period="5y")  # Get at least 7 days for moving average
-        df.reset_index(inplace=True)
-        if df.empty:
-            return f"No data found for symbol {stock_full}", 404
-
-        # Latest row (last day)
-        latest = df.iloc[-1]
-        latest_open = round(latest['Open'], 2)
-        latest_close = round(latest['Close'], 2)
-        latest_high = round(latest['High'], 2)
-        latest_volume = int(latest['Volume'])
-
-        # Add 7-day moving average
-        df['7ma'] = df['Close'].rolling(window=7).mean()
-
-        # Extract data for chart
-        dates = df['Date'].tail(300).dt.strftime('%Y-%m-%d').tolist()
-        closes = df['Close'].tail(300).round(2).fillna('').tolist()
-        volumes = df['Volume'].tail(300).fillna(0).astype(int).tolist()
-        moving_avg = df['7ma'].tail(300).round(2).fillna('').tolist()
-
-        # Optional historical table
-        historical_data_df = df[['Date', 'Open', 'Close', 'High', 'Volume']].copy()
-        historical_data_df['Date'] = historical_data_df['Date'].dt.strftime('%Y-%m-%d')
-        return render_template('dashboard.html',
-            name=symbol,
-            Open=latest_open,
-            Close=latest_close,
-            High=latest_high,
-            Volume=latest_volume,
-            price=round(predicted_price, 2),
-            dates=dates,
-            closes=closes,
-            volumes=volumes,
-            moving_avg=moving_avg,
-            historical_data=historical_data_df.tail(100).to_dict(orient='records')
-        )
-
-    except Exception as e:
-        return f"Error: {e}", 500
+@app.route('/registration',methods=['GET','POST'])
+def register():
+  if request.method=="POST":  
+    name = request.form.get('First')
+    last = request.form.get('Last')
+    email = request.form.get('Email')
+    password = request.form.get('Password')
+    r.hset(f"user:{email}",
+      mapping={
+          'first' : name,
+          'last' : last,
+          'password' : password,
+          'email' : email
+      }
+    )
+    return redirect(url_for('index'))
+  return render_template('registration.html')
 
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
 
+        user_key = f"user:{email}"
+        if r.exists(user_key):
+            storedpass = r.hget(user_key, 'password')
+            if password == storedpass:
+                return redirect(url_for('index'))
+            else:
+                return "Incorrect password"
+        else:
+            return "Email not registered"
 
+    # For GET request, show login form
+    return render_template('login.html')
 
 if __name__=="__main__":
     app.run(host='0.0.0.0',port=5001,debug=True)
