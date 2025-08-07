@@ -19,11 +19,6 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    .navbar {
-      padding: 1rem 2rem;
-      background-color: transparent;
-    }
-
     .search-box {
       background-color: #ffffff;
       padding: 2rem;
@@ -107,27 +102,16 @@
     #suggestions li:hover {
       background-color: #f0f0f0;
     }
-
-    @media (max-width:450px) {
-       .search-box {
-      background-color: #ffffff;
-      padding: 2rem;
-      border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      max-width: 500px;
-      width: 90%;
-      margin-left: 1em;
-      position: relative;
-    }
-    }
   </style>
 </head>
 
 <body>
-   <div class="description">
-      <p style="text-align: center;color: #e17171; font-size: small;margin-top: 2em;">"Results may show after 40-50 second due to model prediction"</p>
-   </div>
-  <!-- Search Box -->
+  <div class="description">
+    <p style="text-align: center;color: #e17171; font-size: small;margin-top: 2em;">
+      "Results may show after 40-50 seconds due to model prediction"
+    </p>
+  </div>
+
   <div class="search-box">
     <h2><i class="fas fa-chart-line"></i> Stock Price Predictor</h2>
 
@@ -141,6 +125,42 @@
       <button onclick="triggerSearch()">Search</button>
     </div>
   </div>
+
+  <!-- Script to show suggestions -->
+  <script>
+    const searchInput = document.getElementById('search');
+    const suggestionsList = document.getElementById('suggestions');
+
+    searchInput.addEventListener('input', async function () {
+      const query = this.value.trim();
+
+      if (query.length === 0) {
+        suggestionsList.innerHTML = '';
+        return;
+      }
+
+      const response = await fetch(`/suggest?q=${query}`);
+      const suggestions = await response.json();
+
+      suggestionsList.innerHTML = '';
+      suggestions.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.name} (${item.symbol})`;
+        li.onclick = () => {
+          searchInput.value = item.symbol;
+          suggestionsList.innerHTML = '';
+        };
+        suggestionsList.appendChild(li);
+      });
+    });
+
+    function triggerSearch() {
+      const symbol = document.getElementById('search').value.trim();
+      if (symbol) {
+        window.location.href = `/dashboard/${symbol}`;
+      }
+    }
+  </script>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
