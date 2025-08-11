@@ -1,5 +1,4 @@
 from flask import Flask,redirect,render_template,request,url_for,jsonify
-import redis
 import sys
 sys.path.append('src')
 from data_loader import data_load
