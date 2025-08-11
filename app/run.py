@@ -101,5 +101,9 @@ def dashboard(symbol):
     except Exception as e:
         return f"Error: {e}", 500
 
-if __name__=="__main__":
-    app.run(host='0.0.0.0',port=5001,debug=True)
+import os
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))  # Railway sets this
+    app.run(host="0.0.0.0", port=port)
+
