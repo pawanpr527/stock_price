@@ -23,6 +23,9 @@ It is designed for **time-series forecasting**, making it ideal for financial da
 <img src="image/dashboard.png" alt="Dashboard" width="300" style="border-radius:16px;"/>
 
 ---
+<h3>Model Directory : </h3>
+it contains 25 lstm model for 25 stocks
+---
 
 ## 🛠 Tech Stack
 - **Backend:** Python, Flask
