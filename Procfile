@@ -1,1 +1,1 @@
-web: gunicorn stock_price.app.run:app
+web: gunicorn app.run:app
