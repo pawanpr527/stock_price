@@ -1,12 +1,16 @@
-from flask import Flask,redirect,render_template,request,url_for,jsonify
+from flask import Flask, redirect, render_template, request, url_for, jsonify
 import sys
-sys.path.append('src')
-from data_loader import data_load
-from src.model import prediction
-from src.data_loader import data_load
-app = Flask(__name__)
+import os
+
+# Add src/ directory to sys.path so imports work
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
+
+from model import prediction        # from src/model.py
+from data_loader import data_load   # from src/data_loader.py
+
 import yfinance as yf
 
+app = Flask(__name__)
 
 
 indian_stocks = [
